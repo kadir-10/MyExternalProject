@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:15
+    container_name: myexternalproject-db
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: myexternaldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev" ]
+      interval: 10s
+      retries: 10
+
+  backend:
+    build:
+      context: ./BackendProject
+      dockerfile: Dockerfile.dev
+    container_name: myexternalproject-backend
+    volumes:
+      - ./BackendProject:/app:cached
+      - /app/node_modules
+    env_file:
+      - ./BackendProject/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./FrontedProject
+      dockerfile: Dockerfile
+    container_name: myexternalproject-frontend
+    volumes:
+      - ./FrontedProject:/app:cached
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE=http://localhost:5000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
