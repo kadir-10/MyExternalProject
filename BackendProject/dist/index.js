@@ -38,7 +38,7 @@ app.post("/api/auth/login", async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 });
-// protected route example
+// protected route exam
 app.get("/api/protected", async (req, res) => {
     const auth = req.headers.authorization;
     if (!auth)
