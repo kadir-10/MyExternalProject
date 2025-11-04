@@ -1,35 +1,46 @@
 import pool from "./db";
 import bcrypt from "bcrypt";
+import { runMigrations } from "./migrations";
 
 async function seed() {
-    const client = await pool.connect();
     try {
-        // create table if not exists
-        await client.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL
-      );
-    `);
+        console.log("🔄 Running migrations...");
+        await runMigrations(pool);
 
-        // create test user
-        const username = "testuser";
-        const plain = "Password123!";
-        const hash = await bcrypt.hash(plain, 10);
+        const client = await pool.connect();
+        try {
+            const testUsers = [
+                { username: "testuser", email: "test@example.com", password: "Password123!" },
+                { username: "devuser", email: "dev@example.com", password: "Dev123!" },
+            ];
 
-        const res = await client.query("SELECT id FROM users WHERE username = $1", [username]);
-        if (res.rowCount === 0) {
-            await client.query("INSERT INTO users (username, password_hash) VALUES ($1, $2)", [username, hash]);
-            console.log(`Inserted test user: ${username} / ${plain}`);
-        } else {
-            console.log("Test user already exists");
+            for (const user of testUsers) {
+                const hash = await bcrypt.hash(user.password, 10);
+                const res = await client.query(
+                    "SELECT id FROM application_users WHERE username = $1",
+                    [user.username]
+                );
+
+                if (res.rowCount === 0) {
+                    await client.query(
+                        "INSERT INTO application_users (username, email, password_hash) VALUES ($1, $2, $3)",
+                        [user.username, user.email, hash]
+                    );
+                    console.log(`✅ Created user: ${user.username} / ${user.password}`);
+                } else {
+                    console.log(`ℹ️  User already exists: ${user.username}`);
+                }
+            }
+
+            console.log("✅ Seed completed successfully");
+        } finally {
+            client.release();
         }
     } catch (err) {
-        console.error("Seed error:", err);
+        console.error("❌ Seed error:", err);
+        process.exit(1);
     } finally {
-        client.release();
-        process.exit(0);
+        await pool.end();
     }
 }
 

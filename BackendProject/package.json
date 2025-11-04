@@ -6,6 +6,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "migrate": "ts-node src/migrate.ts",
     "seed": "ts-node src/seed.ts"
   },
   "dependencies": {

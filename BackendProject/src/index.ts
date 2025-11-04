@@ -25,7 +25,7 @@ app.post("/api/auth/login", async (req, res) => {
 
     try {
         const client = await pool.connect();
-        const result = await client.query("SELECT id, username, password_hash FROM users WHERE username = $1", [username]);
+        const result = await client.query("SELECT id, username, email, password_hash FROM application_users WHERE username = $1", [username]);
         client.release();
 
         const user = result.rows[0];
@@ -34,7 +34,7 @@ app.post("/api/auth/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password_hash);
         if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ sub: user.id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ sub: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
         return res.json({ token });
     } catch (err) {
         console.error("Login error:", err);
