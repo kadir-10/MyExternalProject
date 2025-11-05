@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../lib/axios";
+import { Button } from "@/components/ui/button";
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -20,20 +21,31 @@ export default function Login() {
     }
 
     return (
-        <div style={{ maxWidth: 420, margin: "60px auto" }}>
-            <h2>Giriş</h2>
-            <form onSubmit={onSubmit}>
+        <div className="max-w-md mx-auto mt-16 p-6 border rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">Giriş</h2>
+            <form onSubmit={onSubmit} className="space-y-4">
                 <div>
-                    <input placeholder="Kullanıcı" value={username} onChange={(e) => setUsername(e.target.value)} />
+                    <input 
+                        placeholder="Kullanıcı" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                 </div>
-                <div style={{ marginTop: 8 }}>
-                    <input placeholder="Şifre" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <div>
+                    <input 
+                        placeholder="Şifre" 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                 </div>
-                <div style={{ marginTop: 12 }}>
-                    <button type="submit">Giriş</button>
-                </div>
+                <Button type="submit" className="w-full">
+                    Giriş
+                </Button>
             </form>
-            {msg && <p style={{ marginTop: 12 }}>{msg}</p>}
+            {msg && <p className="mt-4 text-sm text-center">{msg}</p>}
         </div>
     );
 }

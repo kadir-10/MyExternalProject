@@ -50,8 +50,16 @@ app.get("/api/protected", async (req, res) => {
     if (parts.length !== 2) return res.status(401).json({ error: "Invalid token" });
     const token = parts[1];
     try {
-        const payload = jwt.verify(token, JWT_SECRET);
-        res.json({ message: "Hoşgeldin", payload });
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const payload = decoded as unknown as { sub: number; username: string; email: string };
+        res.json({
+            message: `Hoşgeldin ${payload.username}`,
+            user: {
+                id: payload.sub,
+                username: payload.username,
+                email: payload.email
+            }
+        });
     } catch (e) {
         res.status(401).json({ error: "Invalid token" });
     }
