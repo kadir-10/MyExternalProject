@@ -4,10 +4,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "./db";
 import cors from "cors";
+import habitRoutes from "./routes/habitRoutes";
 
 dotenv.config();
 const app = express();
-
 
 app.use(cors({
     origin: ["http://localhost:3000"],
@@ -64,6 +64,9 @@ app.get("/api/protected", async (req, res) => {
         res.status(401).json({ error: "Invalid token" });
     }
 });
+
+// Routes
+app.use("/api/habits", habitRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);

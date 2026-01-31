@@ -1,6 +1,8 @@
 import { Pool } from "pg";
 import * as migration001 from "./001_create_application_users";
 import * as migration002 from "./002_add_name_to_application_users";
+import * as migration003 from "./002_create_habits";
+import * as migration004 from "./003_create_daily_logs";
 
 interface Migration {
     id: number;
@@ -21,6 +23,18 @@ const migrations: Migration[] = [
         name: "002_add_name_to_application_users",
         up: migration002.up,
         down: migration002.down,
+    },
+    {
+        id: 3,
+        name: "002_create_habits",
+        up: migration003.up,
+        down: migration003.down,
+    },
+    {
+        id: 4,
+        name: "003_create_daily_logs",
+        up: migration004.up,
+        down: migration004.down,
     },
 ];
 
